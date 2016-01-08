@@ -1,1 +1,63 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="UTF-8">
+        <title>PartitionSizeCalculator by win98se</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="normalize.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,700">
+        <link rel="stylesheet" type="text/css" href="stylesheet.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="github-light.css" media="screen">
+    </head>
+    <body>
+        <section class="page-header">
+            <h1 class="project-name">PartitionSizeCalculator</h1>
+            <h2 class="project-tagline">A partition size calculator for FAT32 and NTFS when using Windows partitioning tools, such as FDISK and DiskPart.</h2>
+            <a href="https://github.com/win98se/PartitionSizeCalculator" class="btn">View on GitHub</a>
+            <a href="https://github.com/win98se/PartitionSizeCalculator/releases" class="btn">Download releases</a>
+        </section>
+        <section class="main-content">
+            <p>There are some other similar programs available on the web, and I made a decision to write another such program in Java.</p>
+            <p>My aim is to make the most lightweight partition size calculator ever.</p>
+            <h3>When do I need to use this?</h3>
+            <p>This is a good question. But to <a href="http://4.bp.blogspot.com/-vFPIFm5kKcQ/Voe5oIJxfFI/AAAAAAAAAMs/J6DFzrJGOj4/s1600/1046.jpg">explain this bullshxx</a>, I'm going to write very long.</p>
+            <p>Windows uses very weird formulas for converting sizes between megabytes (MB) and gigabytes (GB).</p>
+            <p>Since Windows 9x, when users make partitions using the FDISK utility, normally they will enter 10240 for 10 GB.</p>
+            <p>P/S: 1 GB is 1024 MB, in exact.</p>
+            <p>But in Windows Explorer, it shows up as 9.98 GB, instead of 10.00 GB. This causes problems with some OCD patients. <a href="Lel.png">Lel.</a></p>
+            <p>Then, some people found a solution. Assume G is the desired partition size in GB, the formula is <code>(G-1)*4+1024*G</code>.</p>
+            <p>For example, 10 GB. <code>G=10, (10-1)*4+1024*10 = 9*4+10240 = 36+10240 = 10276</code>, so the correct size is 10276 MB.</p>
+            <p>The problem is solved for some time... Until NTFS appeared. The above formula only works for FAT32 file system.</p>
+            <p>When users enter 10276 for 10 GB and format that partition as NTFS, in Windows, it shows up as 10.01 GB or 10.02 GB...</p>
+            <p>Yup, OCD patients will be mad again. :p</p>
+            <p>So, some other people found another solution. This size is based on cylinder numbers.</p>
+            <p>Since a hard disk has 255 heads and 63 sectors, hence, the size per cylinder is <code>512*255*63 = 8225280 B = approximately 7.84423828125 MB</code>.</p>
+            <p>And since in exact 10 GB is 10240 MB, so let's calculate the number of cylinders.</p>
+            <pre><code>10240/7.84423828125 = 1305.416744475568004979769685652</code></pre>
+            <p>Round up the number, no matter what. So, 1306.</p>
+            <p>Then, remultiply the number of cylinders that is rounded up with the size per cylinder, which is 7.84423828125 MB.</p>
+            <pre><code>1306*7.84423828125 = 10244.5751953125</code></pre>
+            <p>Again, round up the number, no matter what. So, 10245 MB.</p>
+            <p>Problem solved. 10 GB is 10276 MB for FAT32, and 10245 MB for NTFS.</p>
+            <p>I don't think you will want to calculate so hard every time you make partitions with hard disks... So, this program.</p>
+            <h3>Additional Information (UEFI systems only)</h3>
+            <p>In Windows 10 Setup (or maybe in Windows 7, 8.0 and 8.1 too), there is a step for partitioning. If the hard disk is empty, and you want to create the first primary partition, it will make extra 3 hidden partitions.</p>
+            <p>The first partition is the recovery partition (450 MB), followed by the EFI system partition (100 MB) for storing boot files, and finally, Microsoft reserved partition (16 MB). These 3 hidden partitions are created before your first primary partition.</p>
+            <p>And the size of primary partition will be deducted by the same amount used for the three partitions, which is 566 MB.</p>
+            <p>For example, the desired size for the first primary partition is 60 GB. The calculated size using the above formula is 61444 MB. You will need to enter <code>61444+566 = 62010 MB</code> to get the primary partition displayed as 60.00 GB correctly.</p>
+            <p>P/S: Windows NT6 systems (Windows Vista, 7, 8.0, 8.1 and 10) only support NTFS for the system partition, with Windows NT6 installed on it.</p>
+            <h3>References</h3>
+            <ul>
+                <li><a href="https://www.slyar.com/blog/disk-int-ntfs-fat32.html">硬盘整数分区FAT32/NTFS正确方法 - Slyar Home</a></li>
+                <li><a href="http://www.iplaysoft.com/p/howto-calculate-partition-size">Windows 10 怎样计算硬盘整数分区？1GB应该等于多少MB | 异次元软件下载</a></li>
+            </ul>
+            <h2>Copyright Statements</h2>
+            <p>Copyright &copy; 2016 Lim Chunwei</p>
+            <p>This work is free. You can redistribute it and/or modify it under the terms of the Do What The Fuck You Want To Public License, Version 2, as published by Sam Hocevar. See the COPYING.WTFPL file for more details.</p>
+            <footer class="site-footer">
+                <span class="site-footer-owner"><a href="https://github.com/win98se/PartitionSizeCalculator">PartitionSizeCalculator</a> is maintained by <a href="https://github.com/win98se">win98se</a>.</span>
+                <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+            </footer>
+        </section>
+    </body>
+</html>
